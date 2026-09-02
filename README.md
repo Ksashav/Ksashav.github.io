@@ -8,4 +8,8 @@ inline SVG, and the only external request is to Google Fonts.
 - `index.html` — the site
 - `cv.pdf` — downloadable CV
 
-Deployed with GitHub Pages from the `main` branch.
+Live at <https://ksashav.github.io>, deployed by GitHub Pages from the `main` branch.
+Push to `main` and it redeploys in about a minute.
+
+`cv.pdf` is the public CV and deliberately has no phone number on it.
+`cv-with-phone.pdf` is gitignored and stays local, for direct applications.
