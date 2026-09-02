@@ -1,0 +1,10 @@
+# working files — not part of the published site
+index-a.html
+index-b.html
+alternates/
+design-sources/
+reference/
+.DS_Store
+
+# private: full CV with phone number, for direct applications only
+cv-with-phone.pdf

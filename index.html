@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Oleksandr Kolko — Cloud, Infrastructure &amp; Security</title>
+  <meta name="description" content="Cybersecurity and Forensic Computing graduate building containerised, Terraform-managed cloud infrastructure. Portsmouth, UK.">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%232f4fd8%22/%3E%3Cpath%20d%3D%22M9%2012l4%204-4%204%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3Cpath%20d%3D%22M17.5%2020.5h6%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+  <style>
+
+    body { margin: 0; background: #eef2f7; }
+    html { scroll-behavior: smooth; }
+    /* anchors must clear the sticky nav, or the section heading lands under it */
+    section[id] { scroll-margin-top: 104px; }
+
+    .pg { --bg:#eef2f7; --panel:#ffffff; --panel2:#f7f9fc; --line:#dde4ed; --line2:#c3cddb;
+          --accent:#2f4fd8; --text:#101828; --muted:#4a5567; --dim:#7d8899; --amber:#b45309;
+          background:var(--bg); color:var(--text);
+          font-family:"IBM Plex Sans",-apple-system,Segoe UI,sans-serif;
+          font-size:16px; line-height:1.68; -webkit-font-smoothing:antialiased; position:relative; }
+    .pg a { color:var(--accent); text-decoration:none; }
+    .pg a:hover { color:var(--text); }
+    .mono { font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace; }
+    .serif { font-family:"Space Grotesk",-apple-system,sans-serif; }
+
+    .grid-bg { position:absolute; inset:0; pointer-events:none;
+      background-image:linear-gradient(#10182809 1px,transparent 1px),linear-gradient(90deg,#10182809 1px,transparent 1px);
+      background-size:36px 36px; mask-image:radial-gradient(ellipse 80% 34% at 50% 0%,#000 20%,transparent 76%);
+      -webkit-mask-image:radial-gradient(ellipse 80% 34% at 50% 0%,#000 20%,transparent 76%); }
+    .glow { position:absolute; top:-260px; left:50%; transform:translateX(-50%); width:100%; max-width:1100px; height:560px;
+      background:radial-gradient(ellipse at center,#2f4fd814 0%,transparent 64%); pointer-events:none; }
+    .wrap { position:relative; max-width:1060px; margin:0 auto; padding:0 40px; }
+
+    /* ---- social rail ---- */
+    .rail { position:fixed; left:34px; top:50%; transform:translateY(-50%); z-index:4;
+      display:flex; flex-direction:column; align-items:center; gap:20px; }
+    .rail a { color:var(--dim); display:flex; transition:color .18s ease, transform .18s ease; }
+    .rail a:hover { color:var(--accent); transform:translateY(-2px); }
+    .rail::after { content:""; width:1px; height:88px; background:var(--line2); }
+
+    /* ---- nav ---- */
+    .nav { position:sticky; top:0; z-index:5; border-bottom:1px solid var(--line);
+      background:#eef2f7d9; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+    .nav-in { max-width:1060px; margin:0 auto; padding:16px 40px; display:flex; align-items:center; gap:24px; }
+    .nav-link { color:var(--muted); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; }
+    .nav-link:hover { color:var(--accent); }
+    .btn { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line2); border-radius:4px;
+      padding:9px 18px; font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; font-weight:500;
+      color:var(--text); background:var(--panel); transition:all .18s ease; }
+    .pg a.btn { color:var(--text); }
+    .pg a.btn:hover { border-color:var(--accent); color:var(--accent); }
+    .pg a.btn-solid { background:var(--accent); border-color:var(--accent); color:#ffffff; }
+    .pg a.btn-solid:hover { background:#2340bb; border-color:#2340bb; color:#ffffff; }
+
+    /* ---- hero: no card, page-level and editorial ---- */
+    .card { background:var(--panel); border:1px solid var(--line); border-radius:6px; }
+    .term { background:transparent; border:0; border-radius:0; padding:22px 0 4px; }
+    .prompt { color:var(--dim); font-size:13px; }
+    .prompt em { color:var(--accent); font-style:normal; }
+    .name.mono { font-family:"Space Grotesk",-apple-system,sans-serif; font-size:64px; font-weight:700;
+      letter-spacing:-.018em; line-height:1.0; margin:16px 0 14px; color:var(--text); }
+    .role.mono { font-size:15px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); font-weight:500; }
+    .role span { color:var(--line2); }
+    .tag { font-size:16px; color:var(--muted); margin-top:14px; max-width:58ch; }
+    .caret { display:inline-block; width:9px; height:1em; background:var(--accent);
+      vertical-align:-2px; margin-left:3px; animation:blink 1.05s steps(1) infinite; }
+    @keyframes blink { 0%,49% { opacity:1 } 50%,100% { opacity:0 } }
+    [data-type] { visibility:hidden; }
+    [data-type].typed, [data-type].typing { visibility:visible; }
+    .glitch-on { color:var(--accent); }
+    .reveal { opacity:0; transform:translateY(6px); }
+    .reveal.shown { opacity:1; transform:none; transition:opacity .5s ease, transform .5s ease; }
+
+    .chips { display:flex; flex-wrap:wrap; gap:9px; margin-top:30px; }
+    .chip { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line);
+      border-radius:4px; padding:8px 15px; font-size:12.5px; color:var(--muted); background:var(--panel);
+      transition:border-color .18s ease, color .18s ease; }
+    .chip:hover { border-color:var(--accent); color:var(--accent); }
+    .chip svg { flex:none; }
+
+    /* ---- stats ---- */
+    .facts { display:flex; flex-wrap:wrap; gap:10px 26px; margin-top:40px; padding-top:22px;
+      border-top:1px solid var(--line); font-size:13.5px; color:var(--muted); }
+    .facts b { color:var(--text); font-weight:600; }
+    .stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1px; margin-top:52px;
+      background:var(--line); border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+    .stat { background:var(--panel); padding:26px 26px 24px; transition:background .18s ease; }
+    .stat:hover { background:var(--panel2); }
+    .stat-n { font-family:"Space Grotesk",-apple-system,sans-serif; font-size:40px; font-weight:700;
+      color:var(--accent); line-height:1; letter-spacing:-.01em; }
+    .stat-l { font-size:14px; font-weight:600; color:var(--text); margin-top:10px; }
+    .stat-s { font-size:12.5px; color:var(--dim); }
+
+    /* ---- sections ---- */
+    .sec { margin-top:88px; }
+    .sec-h { display:flex; align-items:center; gap:12px; font-size:11.5px; font-weight:600; letter-spacing:.2em;
+      text-transform:uppercase; color:var(--text); margin:0 0 30px; }
+    .sec-h .num { color:var(--accent); font-weight:400; letter-spacing:.1em; }
+    .sec-h b { color:var(--line2); font-weight:400; }
+    .sec-h i { flex:1; height:1px; background:var(--line); font-style:normal; }
+
+    /* ---- entries ---- */
+    .entry { padding:34px 0 38px; border-top:1px solid var(--line); }
+    .entry:first-of-type { border-top:0; padding-top:4px; }
+    .entry-h { display:flex; align-items:baseline; flex-wrap:wrap; gap:16px; }
+    .org { font-family:"Space Grotesk",-apple-system,sans-serif; font-size:30px; font-weight:600;
+      letter-spacing:-.01em; line-height:1.15; margin:0; color:var(--text); }
+    .entry-lead .org { font-size:38px; }
+    .entry-minor .org { font-size:22px; }
+    .entry-minor { padding:26px 0 28px; }
+    .org-role { font-size:11px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); }
+    .repo { display:inline-flex; align-items:center; gap:6px; font-size:11.5px; color:var(--muted);
+      background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:4px 10px;
+      transition:border-color .18s ease, color .18s ease; white-space:nowrap; }
+    .repo:hover { border-color:var(--accent); color:var(--accent); }
+    .repo-sm { margin-left:10px; font-weight:400; vertical-align:middle; }
+    .dateline { font-size:11.5px; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+      color:var(--dim); margin:12px 0 0; }
+    .lead { color:var(--muted); font-size:16px; margin:18px 0 0; max-width:74ch; }
+    ul.bul { list-style:none; padding:0; margin:20px 0 0; display:flex; flex-direction:column; gap:13px; max-width:78ch; }
+    ul.bul li { position:relative; padding-left:26px; color:var(--muted); font-size:15.5px; }
+    ul.bul li::before { content:""; position:absolute; left:0; top:.62em; width:12px; height:1px; background:var(--accent); }
+    ul.bul strong { color:var(--text); font-weight:600; }
+    .filetag { display:inline-flex; align-items:center; gap:8px; font-size:11.5px; color:var(--muted);
+      background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:4px 12px; margin-bottom:16px; }
+    .filetag span { width:6px; height:6px; border-radius:50%; background:var(--accent); }
+    .tags { display:flex; flex-wrap:wrap; gap:7px; margin-top:24px; }
+    .tg { font-size:11.5px; color:var(--muted); background:var(--panel); border:1px solid var(--line);
+      border-radius:4px; padding:5px 12px; }
+    .tg-on { color:var(--accent); border-color:#2f4fd840; background:#2f4fd80a; }
+    .sk-l .tg { color:var(--muted); }
+
+    /* ---- cards ---- */
+    .two { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+    .mini { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:24px 26px;
+      transition:border-color .18s ease, transform .18s ease, box-shadow .18s ease; }
+    .mini:hover { border-color:var(--line2); transform:translateY(-3px); box-shadow:0 12px 28px #1018280f; }
+    .mini-f { font-size:11.5px; color:var(--accent); margin-bottom:10px; letter-spacing:.04em; }
+    .mini-t { font-size:17px; font-weight:600; color:var(--text); margin:0 0 8px; }
+    .mini-d { font-size:14.5px; color:var(--muted); margin:0; }
+
+    /* ---- stack ---- */
+    .stack { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+    .sk { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:26px 28px; }
+    .sk-h { font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); margin:0 0 14px; }
+    .sk-b { font-size:14.5px; color:var(--muted); margin:0; }
+    .sk-l { display:flex; flex-wrap:wrap; gap:7px; margin-top:16px; }
+    .legend { display:flex; gap:24px; margin-top:18px; font-size:11.5px; color:var(--dim); }
+    .legend span { display:inline-flex; align-items:center; gap:7px; }
+    .legend i { width:8px; height:8px; border-radius:50%; font-style:normal; }
+
+    /* ---- education / certs ---- */
+    .edu-mods { display:flex; flex-wrap:wrap; gap:7px; margin-top:22px; }
+    .certs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    .cert { display:flex; align-items:center; gap:16px; background:var(--panel); border:1px solid var(--line);
+      border-radius:6px; padding:18px 20px; }
+    .cert-b { font-size:15px; color:var(--text); font-weight:600; }
+    .cert-s { font-size:12.5px; color:var(--dim); }
+    .pill { font-size:10px; letter-spacing:.12em; text-transform:uppercase; border-radius:4px; padding:4px 11px;
+      white-space:nowrap; border:1px solid #b4530940; color:var(--amber); background:#b453090a; }
+    .pill-on { border-color:#2f4fd840; color:var(--accent); background:#2f4fd80a; }
+
+    /* ---- contact / footer ---- */
+    .cta { background:var(--text); color:#ffffff; border:0; border-radius:8px; padding:46px 48px;
+      display:flex; justify-content:space-between; align-items:center; gap:36px; flex-wrap:wrap; }
+    .cta h3 { font-family:"Space Grotesk",-apple-system,sans-serif; font-size:30px; font-weight:600;
+      margin:0 0 10px; letter-spacing:-.01em; line-height:1.12; }
+    .cta p { margin:0; color:#ffffffb0; font-size:15.5px; max-width:440px; }
+    .cta-act { display:flex; gap:10px; flex-wrap:wrap; }
+    .pg .cta a.btn { background:transparent; border-color:#ffffff38; color:#f6f4ef; }
+    .pg .cta a.btn:hover { border-color:#f6f4ef; color:#ffffff; }
+    .pg .cta a.btn-solid { background:#ffffff; border-color:#ffffff; color:var(--text); }
+    .pg .cta a.btn-solid:hover { background:#ffffff; border-color:#ffffff; color:var(--text); }
+    .foot { margin-top:64px; padding:30px 0 56px; border-top:1px solid var(--line);
+      display:flex; justify-content:space-between; align-items:center; gap:18px; font-size:12.5px;
+      color:var(--dim); flex-wrap:wrap; }
+    .foot-l { display:flex; align-items:center; gap:22px; flex-wrap:wrap; }
+    .foot a { display:inline-flex; align-items:center; gap:7px; color:var(--muted); }
+    .foot a:hover { color:var(--accent); }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior:auto; }
+      .caret { animation:none; }
+      .reveal { opacity:1; transform:none; }
+      .mini:hover, .rail a:hover { transform:none; }
+    }
+
+    @media (max-width: 1240px) { .rail { display:none; } }
+
+    @media (max-width: 900px) {
+      .wrap { padding:0 20px; }
+      .nav-in { padding:13px 20px; gap:14px; }
+      .nav-link { display:none; }
+      .term { padding:16px 0 0; }
+      .name.mono { font-size:46px; }
+      .role.mono { font-size:12.5px; letter-spacing:.12em; }
+      .tag { font-size:15px; }
+      .chips { flex-direction:column; align-items:stretch; }
+      .chip { min-height:46px; padding:12px 16px; box-sizing:border-box; }
+      .stats { grid-template-columns:1fr; margin-top:34px; }
+      .stat-n { font-size:40px; }
+      .sec { margin-top:58px; }
+      .org { font-size:27px; }
+      .entry { padding:26px 0 28px; }
+      ul.bul li, .lead, .sk-b { font-size:14.5px; }
+      .two, .stack, .certs { grid-template-columns:1fr; }
+      .cta { padding:28px 24px; flex-direction:column; align-items:stretch; border-radius:6px; }
+      .cta h3 { font-size:27px; }
+      .cta-act { flex-direction:column; }
+      .btn { justify-content:center; min-height:46px; box-sizing:border-box; }
+      .foot { flex-direction:column; align-items:flex-start; gap:12px; }
+      .legend { flex-direction:column; gap:8px; }
+    }
+
+    @media (max-width: 420px) {
+      .name.mono { font-size:38px; }
+      .org { font-size:24px; }
+    }
+  
+    /* version B: minor projects read as a list, not more cards */
+    .plainlist { display:flex; flex-direction:column; gap:0; margin-top:8px; }
+    .plainlist div { display:flex; gap:20px; align-items:baseline; padding:16px 0; border-top:1px solid var(--line); }
+    .plainlist b { font-weight:600; color:var(--text); font-size:15px; min-width:230px; }
+    .plainlist span { color:var(--muted); font-size:14.5px; }
+    @media (max-width: 900px) {
+      .plainlist div { flex-direction:column; gap:4px; }
+      .plainlist b { min-width:0; }
+      .entry-lead .org { font-size:26px; }
+      .entry-minor .org { font-size:20px; }
+      .facts { gap:8px 18px; font-size:13px; }
+    }
+  </style>
+</head>
+<body>
+<div class="pg">
+  <div class="grid-bg"></div>
+
+  <div class="rail">
+    <a href="https://github.com/Ksashav" aria-label="GitHub"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-.9-2.6c3-.3 6.2-1.5 6.2-6.7A5.2 5.2 0 0 0 19.9 5a4.9 4.9 0 0 0-.1-3.6s-1.1-.3-3.7 1.4a12.6 12.6 0 0 0-6.6 0C6.9 1.1 5.8 1.4 5.8 1.4A4.9 4.9 0 0 0 5.7 5a5.2 5.2 0 0 0-1.4 3.6c0 5.2 3.2 6.4 6.2 6.7a3.4 3.4 0 0 0-.9 2.6V22"></path></svg></a>
+    <a href="https://www.linkedin.com/in/oleksandr-kolko-9158862b4/" aria-label="LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="8" y1="11" x2="8" y2="16"></line><line x1="8" y1="8" x2="8" y2="8"></line><path d="M12 16v-3a2 2 0 0 1 4 0v3"></path></svg></a>
+    <a href="mailto:sasha2006kol@gmail.com" aria-label="Email"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m2 7 10 6 10-6"></path></svg></a>
+    <a href="https://ksashav.gitbook.io/projects/" aria-label="Project write-ups"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"></path></svg></a>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-in">
+      <span class="mono" style="font-size:13.5px; color:var(--text);"><span style="color:var(--accent)">oleksandr</span><span style="color:var(--dim)">@kolko</span></span>
+      <span style="flex:1"></span>
+      <a class="nav-link mono" href="#experience">Experience</a>
+      <a class="nav-link mono" href="#projects">Projects</a>
+      <a class="nav-link mono" href="#stack">Stack</a>
+      <a class="nav-link mono" href="#education">Education</a>
+      <a class="nav-link mono" href="#certifications">Certifications</a>
+      <a class="nav-link mono" href="#tryhackme">TryHackMe</a>
+      <a class="btn btn-solid mono" href="cv.pdf" download><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Download CV</a>
+    </div>
+  </nav>
+
+  <div class="wrap" style="padding-top:76px;">
+    <div class="glow"></div>
+
+    <div class="card term">
+      <div class="reveal">
+        <h1 class="name mono">Oleksandr Kolko</h1>
+        <div class="role mono" data-glitch aria-label="Junior Cloud and DevOps Engineer">Junior Cloud <span>/</span> DevOps Engineer</div>
+        <div class="tag mono" data-glitch aria-label="AWS, Docker, Kubernetes, Terraform">AWS <span style="color:var(--line2)">&middot;</span> Docker <span style="color:var(--line2)">&middot;</span> Kubernetes <span style="color:var(--line2)">&middot;</span> Terraform</div>
+        <div class="chips">
+          <a class="chip mono" href="https://github.com/Ksashav"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-.9-2.6c3-.3 6.2-1.5 6.2-6.7A5.2 5.2 0 0 0 19.9 5a4.9 4.9 0 0 0-.1-3.6s-1.1-.3-3.7 1.4a12.6 12.6 0 0 0-6.6 0C6.9 1.1 5.8 1.4 5.8 1.4A4.9 4.9 0 0 0 5.7 5a5.2 5.2 0 0 0-1.4 3.6c0 5.2 3.2 6.4 6.2 6.7a3.4 3.4 0 0 0-.9 2.6V22"></path></svg> Ksashav</a>
+          <a class="chip mono" href="mailto:sasha2006kol@gmail.com"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m2 7 10 6 10-6"></path></svg> sasha2006kol@gmail.com</a>
+          <a class="chip mono" href="https://www.linkedin.com/in/oleksandr-kolko-9158862b4/"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="8" y1="11" x2="8" y2="16"></line><line x1="8" y1="8" x2="8" y2="8"></line><path d="M12 16v-3a2 2 0 0 1 4 0v3"></path></svg> LinkedIn</a>
+          <span class="chip mono"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg> Portsmouth, UK</span>
+        </div>
+        <div class="facts mono">
+          <span>BSc Cybersecurity, <b>First Class Honours</b></span>
+          <span>Four weeks' notice</span>
+          <span>Will relocate anywhere in the UK</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="sec" id="summary">
+      <h2 class="sec-h mono"><span>Summary</span><i></i></h2>
+      <div class="card" style="padding:26px 30px;">
+        <p style="margin:0 0 14px; font-size:15.5px; color:var(--muted);">
+          My degree is cybersecurity, not general computing, and it shows in how I build. Least-privilege IAM, secrets held in Secrets Manager and KMS, isolated networks and an audit trail you can actually follow are where I start a build, not what I add the week before a review.
+        </p>
+        <p style="margin:0; font-size:15.5px; color:var(--muted);">
+          I spent five months keeping as many as five containerised AWS lab environments running at a security startup, all of it Terraform. The GKE platform in my projects exists because I wanted to find out whether those habits carried over to a second cloud. They did. I'm after a junior cloud or infrastructure role where I'll be working across more than one.
+        </p>
+      </div>
+    </section>
+
+    <section class="sec" id="experience">
+      <h2 class="sec-h mono"><span>Experience</span><i></i></h2>
+
+      <div class="entry entry-lead">
+        <div class="entry-h">
+          <h3 class="org">CyberVectors Labs</h3>
+          <span class="org-role mono">Cybersecurity Engineering Intern</span>
+        </div>
+        <p class="dateline mono">Oct 2025 &ndash; Feb 2026 &middot; Remote</p>
+        <p class="lead">A research-driven startup building an ICS/IIoT security training platform on AWS. I built the attack environments and kept them running.</p>
+        <ul class="bul">
+          <li>Up to five containerised lab environments ran at once, all of it Terraform: ECS and EKS on Fargate over EC2 compute, with dynamic port allocation and session isolation so one person's lab could never see another's.</li>
+          <li>I wired the provisioning together in Python (FastAPI) and PHP (Laravel), talking to the Docker API and AWS Lambda, which took the manual work out of spinning a lab up.</li>
+          <li>VPCs, security groups and network ACLs were Terraform-managed too, and IAM policies were scoped so a user reached their own resources and nothing further.</li>
+          <li>Credentials lived in <strong>Secrets Manager and KMS</strong>, never in plaintext. S3 held lab data and artefacts.</li>
+          <li>CI/CD ran through CodePipeline, CodeBuild and CodeCommit, which gave the team releases they could trace back.</li>
+          <li>When something broke I went to CloudTrail and worked backwards. I wrote the deployment guides and architecture overviews as well, read by engineers and non-engineers both.</li>
+        </ul>
+        <div class="tags mono"><span class="tg">Terraform</span><span class="tg">AWS</span><span class="tg">ECS / EKS</span><span class="tg">Docker</span><span class="tg">Python</span><span class="tg">IAM</span></div>
+      </div>
+
+      <div class="entry entry-minor">
+        <div class="entry-h">
+          <h3 class="org">Calvin Klein</h3>
+          <span class="org-role mono">Sales Assistant</span>
+        </div>
+        <p class="dateline mono">Jun 2024 &ndash; present &middot; Portsmouth</p>
+        <p class="lead">Retail floor alongside the degree. Fifty-odd customers a day, inventory, and the sort of shift where you sort out whatever is in front of you and keep moving.</p>
+      </div>
+    </section>
+
+    <section class="sec" id="projects">
+      <h2 class="sec-h mono"><span>Projects</span><i></i></h2>
+
+      <div class="entry entry-lead">
+        <div class="entry-h">
+          <h3 class="org">GCP / GKE DevSecOps Platform</h3>
+          <a class="repo mono" href="https://github.com/Ksashav/secops-gke-platform"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-.9-2.6c3-.3 6.2-1.5 6.2-6.7A5.2 5.2 0 0 0 19.9 5a4.9 4.9 0 0 0-.1-3.6s-1.1-.3-3.7 1.4a12.6 12.6 0 0 0-6.6 0C6.9 1.1 5.8 1.4 5.8 1.4A4.9 4.9 0 0 0 5.7 5a5.2 5.2 0 0 0-1.4 3.6c0 5.2 3.2 6.4 6.2 6.7a3.4 3.4 0 0 0-.9 2.6V22"></path></svg> secops-gke-platform</a>
+          <span class="org-role mono">Terraform &middot; Keyless CI/CD &middot; Detection-as-code</span>
+        </div>
+        <p class="dateline mono">Personal project</p>
+        <p class="lead">The GCP twin of my AWS anomaly-detection work: same patterns, second cloud, all of it as code.</p>
+        <ul class="bul">
+          <li>Terraform stands up a VPC-native GKE Standard cluster on Spot nodes that autoscales 1 to 5, with Artifact Registry and GCS-backed remote state, running a FastAPI service.</li>
+          <li>The pipeline holds <strong>no static service-account keys at all</strong>. GitHub Actions gates on pytest, authenticates through Workload Identity Federation, then builds, SHA-tags and <span class="mono" style="color:var(--text)">helm upgrade</span>s on every merge to main.</li>
+          <li>Detection is code too. A Cloud Audit Logs metric feeds a Monitoring alert that emails me the moment anyone creates a service-account key, which is precisely the thing the pipeline is designed never to need. kube-prometheus-stack and Grafana cover RPS, p95 latency and flagged-request rate, and I put load through it until the PrometheusRule actually fired.</li>
+          <li>Cost has guardrails: a &pound;10 monthly budget alerting at 50, 90 and 100%, attribution labels, Spot nodes, and autoscaling that can go to zero.</li>
+          <li>The Kafka side (KRaft, single broker, separate consumer Deployment) cost me an evening on <span class="mono" style="color:var(--text)">__consumer_offsets</span> refusing to create, because the default replication factor was more than one broker could satisfy.</li>
+        </ul>
+        <div class="tags mono"><span class="tg">GCP / GKE</span><span class="tg">Terraform</span><span class="tg">Helm</span><span class="tg">GitHub Actions</span><span class="tg">Prometheus</span><span class="tg">Kafka</span></div>
+      </div>
+
+      <div class="entry">
+        <div class="entry-h">
+          <h3 class="org">Anomaly Detection Proxy</h3>
+          <a class="repo mono" href="https://github.com/Ksashav/network-anomaly-detector"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-.9-2.6c3-.3 6.2-1.5 6.2-6.7A5.2 5.2 0 0 0 19.9 5a4.9 4.9 0 0 0-.1-3.6s-1.1-.3-3.7 1.4a12.6 12.6 0 0 0-6.6 0C6.9 1.1 5.8 1.4 5.8 1.4A4.9 4.9 0 0 0 5.7 5a5.2 5.2 0 0 0-1.4 3.6c0 5.2 3.2 6.4 6.2 6.7a3.4 3.4 0 0 0-.9 2.6V22"></path></svg> network-anomaly-detector</a>
+          <span class="org-role mono">Kubernetes &middot; Helm &middot; Python</span>
+        </div>
+        <p class="dateline mono">Personal project</p>
+        <ul class="bul">
+          <li>A Python reverse proxy reads inbound HTTP live and flags three things: more than ten requests from one IP in sixty seconds (aged by timestamp, so the window actually moves), probes at /admin, /.env and /config, and scanner user-agents like sqlmap, nmap and nikto.</li>
+          <li>It logs and forwards <strong>rather than</strong> blocking. On a financial platform, a false positive that drops a real customer costs more than a scanner you watched go past.</li>
+          <li>Three replicas on Kubernetes. I checked self-healing the blunt way, by deleting pods and watching the controller put them back, with the app exposed through a NodePort Service.</li>
+          <li>Helm packaging with dev, staging and prod values files, so a deploy is one command and so is a rollback.</li>
+          <li>AWS credentials arrive as Kubernetes Secrets at runtime. Alerts land in S3 as timestamped JSON.</li>
+        </ul>
+        <div class="tags mono"><span class="tg">Kubernetes</span><span class="tg">Helm</span><span class="tg">Python</span><span class="tg">AWS S3</span></div>
+      </div>
+
+      <div class="entry">
+        <div class="entry-h">
+          <h3 class="org">ML Phishing Detection Extension</h3>
+          <a class="repo mono" href="https://github.com/Ksashav/phishing-detection-extension"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-.9-2.6c3-.3 6.2-1.5 6.2-6.7A5.2 5.2 0 0 0 19.9 5a4.9 4.9 0 0 0-.1-3.6s-1.1-.3-3.7 1.4a12.6 12.6 0 0 0-6.6 0C6.9 1.1 5.8 1.4 5.8 1.4A4.9 4.9 0 0 0 5.7 5a5.2 5.2 0 0 0-1.4 3.6c0 5.2 3.2 6.4 6.2 6.7a3.4 3.4 0 0 0-.9 2.6V22"></path></svg> phishing-detection-extension</a>
+          <span class="org-role mono">Final-year project, graded 75%</span>
+        </div>
+        <p class="dateline mono">2025 &ndash; 2026</p>
+        <ul class="bul">
+          <li>A Chrome and Firefox extension that scores pages for phishing as they load, with the model running locally so no browsing data leaves the machine.</li>
+          <li>Features come from URL structure and page content. Random Forest and XGBoost, trained on 8,000 URLs, 8% false positives.</li>
+          <li>I did all of it: scoping, collecting the data, training, integration, testing, write-up.</li>
+        </ul>
+        <div class="tags mono"><span class="tg">Python</span><span class="tg">XGBoost</span><span class="tg">Browser extension</span></div>
+      </div>
+
+      <div style="margin-top:38px;">
+        <p class="dateline mono" style="margin-bottom:4px;">Also</p>
+        <div class="plainlist">
+          <div><b>Cloud Security Scanner <a class="repo repo-sm mono" href="https://github.com/Ksashav/cloud-scanner"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-.9-2.6c3-.3 6.2-1.5 6.2-6.7A5.2 5.2 0 0 0 19.9 5a4.9 4.9 0 0 0-.1-3.6s-1.1-.3-3.7 1.4a12.6 12.6 0 0 0-6.6 0C6.9 1.1 5.8 1.4 5.8 1.4A4.9 4.9 0 0 0 5.7 5a5.2 5.2 0 0 0-1.4 3.6c0 5.2 3.2 6.4 6.2 6.7a3.4 3.4 0 0 0-.9 2.6V22"></path></svg> cloud-scanner</a></b><span>Port scanning, security-header checks, S3 misconfiguration detection. I pointed it at my own AWS account, it found real problems, and I fixed them in Terraform.</span></div>
+          <div><b>Home lab</b><span>Six VMs shaped like a small enterprise network: VPN, firewall rules, routing between segments. Then I broke it on purpose to see what recovery actually took.</span></div>
+          <div><b>EmbedPress CVE research</b><span>CVE-2024-11203, CVE-2024-38707 and CVE-2024-43328, worked through with Burp Suite, WPScan and code review, mapped to the OWASP Top 10.</span></div>
+          <div><b>Ace London Hackathon 2025</b><span>Second place. A VoIP system with the security side thought about, built to a deadline in a small team.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="stack">
+      <h2 class="sec-h mono"><span>Stack</span><i></i></h2>
+      <div class="stack">
+        <div class="sk">
+          <h3 class="sk-h mono">Cloud &amp; infrastructure</h3>
+          <p class="sk-b">AWS is where I'm strongest: EC2, ECS, EKS, Fargate, Lambda, VPC, security groups, NACLs, S3, IAM, Secrets Manager and KMS, all of it through Terraform. I've built on GCP properly once. Azure I'm reading about, not claiming.</p>
+          <div class="sk-l mono"><span class="tg">AWS</span><span class="tg">Terraform</span><span class="tg">GCP</span><span class="tg">IAM</span></div>
+        </div>
+        <div class="sk">
+          <h3 class="sk-h mono">Containers &amp; DevOps</h3>
+          <p class="sk-b">Docker daily. Kubernetes for deployments, scaling, self-healing, Services and Secrets, packaged with Helm and per-environment values files. CI/CD in both GitHub Actions and CodePipeline.</p>
+          <div class="sk-l mono"><span class="tg">Docker</span><span class="tg">Kubernetes</span><span class="tg">Helm</span><span class="tg">GitHub Actions</span></div>
+        </div>
+        <div class="sk">
+          <h3 class="sk-h mono">Scripting</h3>
+          <p class="sk-b">Python first, for automation, APIs and small FastAPI services. Bash when it's shorter.</p>
+          <div class="sk-l mono"><span class="tg">Python</span><span class="tg">FastAPI</span><span class="tg">Bash</span><span class="tg">Git</span></div>
+        </div>
+        <div class="sk">
+          <h3 class="sk-h mono">Linux, networking &amp; security</h3>
+          <p class="sk-b">Ubuntu and Alpine day to day. TCP/IP, DNS, DHCP, VLANs, firewalls, VPCs. ISO 27001, NIST CSF and GDPR come from the degree side, along with Wireshark, Nmap, Burp Suite and Splunk.</p>
+          <div class="sk-l mono"><span class="tg">Linux</span><span class="tg">TCP/IP</span><span class="tg">Wireshark</span><span class="tg">Splunk</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="education">
+      <h2 class="sec-h mono"><span>Education</span><i></i></h2>
+      <div class="entry">
+        <div class="entry-h">
+          <h3 class="org">University of Portsmouth</h3>
+          <span class="org-role mono">BSc Cybersecurity &amp; Forensic Computing</span>
+        </div>
+        <p class="dateline mono">Sep 2023 &ndash; Jul 2026 &middot; First Class Honours &middot; Dissertation 75%</p>
+        <p class="lead">BCS-accredited. The security grounding comes from here; the infrastructure side came from the internship and my own projects.</p>
+        <div class="edu-mods mono">
+          <span class="tg">Networking &amp; Operating Systems</span><span class="tg">Architecture &amp; OS</span><span class="tg">IT &amp; Internetworking Security (CCNA-aligned)</span><span class="tg">Security Management: ISO 27001 / NIST CSF / GDPR</span><span class="tg">Malware &amp; Vulnerability</span><span class="tg">Security &amp; Cryptography</span><span class="tg">Ethical Hacking</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="certifications">
+      <h2 class="sec-h mono"><span>Certifications</span><i></i></h2>
+      <div class="certs">
+        <div class="cert"><span class="pill mono">In progress</span><span><span class="cert-b">AWS Certified Cloud Practitioner</span><br><span class="cert-s mono">Amazon Web Services</span></span></div>
+        <div class="cert"><span class="pill mono">In progress</span><span><span class="cert-b">CompTIA Security+</span><br><span class="cert-s mono">CompTIA</span></span></div>
+        <div class="cert"><span class="pill mono">In progress</span><span><span class="cert-b">CompTIA Network+</span><br><span class="cert-s mono">CompTIA</span></span></div>
+      </div>
+    </section>
+
+    <section class="sec" id="tryhackme">
+      <h2 class="sec-h mono"><span>TryHackMe</span><i></i></h2>
+      <div class="entry entry-minor" style="padding-top:0;">
+        <div class="entry-h">
+          <h3 class="org">140+ rooms, top 3% of users</h3>
+        </div>
+        <p class="lead">Where the practice happens between projects.</p>
+      </div>
+      <div class="plainlist">
+        <div><b>DevOps &amp; pipeline security</b><span>Container hardening, CI/CD pipeline risks, SAST/DAST, supply chain, SSDLC.</span></div>
+        <div><b>Cloud &amp; AI security</b><span>AWS attack and defence labs across IAM, EC2, S3, VPC and Lambda. AI threat modelling, prompt injection, RAG security.</span></div>
+        <div><b>SOC &amp; security operations</b><span>Log analysis, monitoring, alert triage, incident response, SIEM work in Splunk.</span></div>
+        <div><b>AppSec &amp; OWASP</b><span>OWASP Top 10 (2025), API Security Top 10, threat modelling.</span></div>
+      </div>
+    </section>
+
+    <section class="sec" id="contact">
+      <h2 class="sec-h mono"><span>Get in touch</span><i></i></h2>
+      <div class="cta">
+        <div>
+          <h3>Looking for a junior cloud or infrastructure role</h3>
+          <p>Four weeks' notice, right to work in the UK, and I'll move anywhere in the country for the right team. Email reaches me fastest.</p>
+        </div>
+        <div class="cta-act">
+          <a class="btn btn-solid mono" href="mailto:sasha2006kol@gmail.com"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m2 7 10 6 10-6"></path></svg> Email me</a>
+          <a class="btn mono" href="https://www.linkedin.com/in/oleksandr-kolko-9158862b4/"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="8" y1="11" x2="8" y2="16"></line><line x1="8" y1="8" x2="8" y2="8"></line><path d="M12 16v-3a2 2 0 0 1 4 0v3"></path></svg> LinkedIn</a>
+          <a class="btn mono" href="https://github.com/Ksashav"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-.9-2.6c3-.3 6.2-1.5 6.2-6.7A5.2 5.2 0 0 0 19.9 5a4.9 4.9 0 0 0-.1-3.6s-1.1-.3-3.7 1.4a12.6 12.6 0 0 0-6.6 0C6.9 1.1 5.8 1.4 5.8 1.4A4.9 4.9 0 0 0 5.7 5a5.2 5.2 0 0 0-1.4 3.6c0 5.2 3.2 6.4 6.2 6.7a3.4 3.4 0 0 0-.9 2.6V22"></path></svg> GitHub</a>
+          <a class="btn mono" href="https://ksashav.gitbook.io/projects/"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg> Project write-ups</a>
+        </div>
+      </div>
+
+      <div class="foot mono">
+        <div class="foot-l">
+          <a href="https://www.linkedin.com/in/oleksandr-kolko-9158862b4/"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="8" y1="11" x2="8" y2="16"></line><line x1="8" y1="8" x2="8" y2="8"></line><path d="M12 16v-3a2 2 0 0 1 4 0v3"></path></svg> linkedin.com/in/oleksandr-kolko</a>
+          <a href="https://github.com/Ksashav"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-.9-2.6c3-.3 6.2-1.5 6.2-6.7A5.2 5.2 0 0 0 19.9 5a4.9 4.9 0 0 0-.1-3.6s-1.1-.3-3.7 1.4a12.6 12.6 0 0 0-6.6 0C6.9 1.1 5.8 1.4 5.8 1.4A4.9 4.9 0 0 0 5.7 5a5.2 5.2 0 0 0-1.4 3.6c0 5.2 3.2 6.4 6.2 6.7a3.4 3.4 0 0 0-.9 2.6V22"></path></svg> github.com/Ksashav</a>
+          <a href="mailto:sasha2006kol@gmail.com"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m2 7 10 6 10-6"></path></svg> sasha2006kol@gmail.com</a>
+        </div>
+        <span>Portsmouth, UK &middot; Full UK driving licence</span>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reveals = [].slice.call(document.querySelectorAll('.reveal'));
+  reveals.forEach(function (el) { el.classList.add('shown'); });
+  if (reduce) return;
+
+  // one character at a time flips to 0 or 1, then back. Hero only.
+  var ROUND = 'oOeaycgbdpqCGQ0';
+  function digitFor(ch) { return ROUND.indexOf(ch) > -1 ? '0' : '1'; }
+
+  function startGlitch(els) {
+    var slots = [];
+    els.forEach(function (el) {
+      var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false), n;
+      while ((n = walker.nextNode())) {
+        var text = n.nodeValue;
+        for (var i = 0; i < text.length; i++) {
+          if (/[A-Za-z]/.test(text.charAt(i))) slots.push({ node: n, i: i, original: text });
+        }
+      }
+    });
+    if (!slots.length) return;
+    (function cycle() {
+      var s = slots[Math.floor(Math.random() * slots.length)];
+      var t = s.original;
+      s.node.nodeValue = t.slice(0, s.i) + digitFor(t.charAt(s.i)) + t.slice(s.i + 1);
+      setTimeout(function () {
+        s.node.nodeValue = s.original;
+        setTimeout(cycle, 260 + Math.random() * 420);
+      }, 780 + Math.random() * 420);
+    })();
+  }
+
+  setTimeout(function () {
+    startGlitch([].slice.call(document.querySelectorAll('[data-glitch]')));
+  }, 700);
+})();
+</script>
+</body>
+</html>
