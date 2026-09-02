@@ -70,6 +70,10 @@
     [data-type] { visibility:hidden; }
     [data-type].typed, [data-type].typing { visibility:visible; }
     .glitch-on { color:var(--accent); }
+    /* used sparingly: the handful of phrases a recruiter should catch in ten seconds */
+    .hl { background:linear-gradient(transparent 60%, color-mix(in oklab,var(--accent) 20%, transparent) 60%);
+      font-weight:600; color:var(--text); padding:0 1px; }
+    .pitch { font-size:17px; color:var(--text); margin-top:18px; max-width:60ch; line-height:1.6; }
     .reveal { opacity:0; transform:translateY(6px); }
     .reveal.shown { opacity:1; transform:none; transition:opacity .5s ease, transform .5s ease; }
 
@@ -266,6 +270,7 @@
         <h1 class="name mono" data-glitch aria-label="Oleksandr Kolko">Oleksandr Kolko</h1>
         <div class="role mono" data-glitch aria-label="Junior Cloud and DevOps Engineer">Junior Cloud <span>/</span> DevOps Engineer</div>
         <div class="tag mono" data-glitch aria-label="AWS, Docker, Kubernetes, Terraform">AWS <span style="color:var(--line2)">&middot;</span> Docker <span style="color:var(--line2)">&middot;</span> Kubernetes <span style="color:var(--line2)">&middot;</span> Terraform</div>
+        <p class="pitch">Five months at a security startup running <span class="hl">Terraform-provisioned AWS infrastructure</span>, plus a GCP platform I built to prove the patterns carried across clouds.</p>
         <div class="chips">
           <a class="chip mono" href="https://github.com/Ksashav"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-.9-2.6c3-.3 6.2-1.5 6.2-6.7A5.2 5.2 0 0 0 19.9 5a4.9 4.9 0 0 0-.1-3.6s-1.1-.3-3.7 1.4a12.6 12.6 0 0 0-6.6 0C6.9 1.1 5.8 1.4 5.8 1.4A4.9 4.9 0 0 0 5.7 5a5.2 5.2 0 0 0-1.4 3.6c0 5.2 3.2 6.4 6.2 6.7a3.4 3.4 0 0 0-.9 2.6V22"></path></svg> Ksashav</a>
           <a class="chip mono" href="mailto:sasha2006kol@gmail.com"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m2 7 10 6 10-6"></path></svg> sasha2006kol@gmail.com</a>
@@ -286,7 +291,7 @@
           My degree is cybersecurity, not general computing, and it shows in how I build. Least-privilege IAM, secrets held in Secrets Manager and KMS, isolated networks and an audit trail you can actually follow are where I start a build, not what I add the week before a review.
         </p>
         <p style="margin:0; font-size:15.5px; color:var(--muted);">
-          I spent five months keeping as many as five containerised AWS lab environments running at a security startup, all of it Terraform. The GKE platform in my projects exists because I wanted to find out whether those habits carried over to a second cloud. They did. I'm after a junior cloud or infrastructure role where I'll be working across more than one.
+          I spent five months keeping as many as <span class="hl">five containerised AWS lab environments</span> running at a security startup, all of it Terraform. The GKE platform in my projects exists because I wanted to find out whether those habits carried over to a second cloud. They did. I'm after a junior cloud or infrastructure role where I'll be working across more than one.
         </p>
       </div>
     </section>
@@ -302,7 +307,7 @@
         <p class="dateline mono">Oct 2025 &ndash; Feb 2026 &middot; Remote</p>
         <p class="lead">A research-driven startup building an ICS/IIoT security training platform on AWS. I built the attack environments and kept them running.</p>
         <ul class="bul">
-          <li>Up to five containerised lab environments ran at once, all of it Terraform: ECS and EKS on Fargate over EC2 compute, with dynamic port allocation and session isolation so one person's lab could never see another's.</li>
+          <li><span class="hl">Up to five containerised lab environments</span> ran at once, all of it Terraform: ECS and EKS on Fargate over EC2 compute, with dynamic port allocation and session isolation so one person's lab could never see another's.</li>
           <li>I wired the provisioning together in Python (FastAPI) and PHP (Laravel), talking to the Docker API and AWS Lambda, which took the manual work out of spinning a lab up.</li>
           <li>VPCs, security groups and network ACLs were Terraform-managed too, and IAM policies were scoped so a user reached their own resources and nothing further.</li>
           <li>Credentials lived in <strong>Secrets Manager and KMS</strong>, never in plaintext. S3 held lab data and artefacts.</li>
@@ -335,7 +340,7 @@
         <p class="lead">The GCP twin of my AWS anomaly-detection work: same patterns, second cloud, all of it as code.</p>
         <ul class="bul">
           <li>Terraform stands up a VPC-native GKE Standard cluster on Spot nodes that autoscales 1 to 5, with Artifact Registry and GCS-backed remote state, running a FastAPI service.</li>
-          <li>The pipeline holds <strong>no static service-account keys at all</strong>. GitHub Actions gates on pytest, authenticates through Workload Identity Federation, then builds, SHA-tags and <span class="mono" style="color:var(--text)">helm upgrade</span>s on every merge to main.</li>
+          <li>The pipeline holds <span class="hl">no static service-account keys at all</span>. GitHub Actions gates on pytest, authenticates through Workload Identity Federation, then builds, SHA-tags and <span class="mono" style="color:var(--text)">helm upgrade</span>s on every merge to main.</li>
           <li>Detection is code too. A Cloud Audit Logs metric feeds a Monitoring alert that emails me the moment anyone creates a service-account key, which is precisely the thing the pipeline is designed never to need. kube-prometheus-stack and Grafana cover RPS, p95 latency and flagged-request rate, and I put load through it until the PrometheusRule actually fired.</li>
           <li>Cost has guardrails: a &pound;10 monthly budget alerting at 50, 90 and 100%, attribution labels, Spot nodes, and autoscaling that can go to zero.</li>
           <li>The Kafka side (KRaft, single broker, separate consumer Deployment) cost me an evening on <span class="mono" style="color:var(--text)">__consumer_offsets</span> refusing to create, because the default replication factor was more than one broker could satisfy.</li>
